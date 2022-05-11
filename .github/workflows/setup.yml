@@ -2,6 +2,13 @@ name: Execute template to populate repository
 
 on:
   workflow_dispatch:
+    inputs:
+      owner:
+        description: 'foo'
+        required: true
+      name:
+        description: 'bar'
+        required: true
 
 permissions:
   contents: write

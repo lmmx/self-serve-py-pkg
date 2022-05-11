@@ -26,7 +26,8 @@ jobs:
             const variables = {
               owner: context.repo.owner,
               name: context.repo.repo,
-              event_type: 'trigger', # becomes `context.payload.action`
+              // Note: `event_type` becomes `context.payload.action`
+              event_type: 'trigger' 
             }
             console.log(variables)
             const result = await github.request(query, variables)
