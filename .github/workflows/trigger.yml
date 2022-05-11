@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  setup-repo:
+  trigger-ci:
     if: ${{ github.repository != 'lmmx/self-serve-py-pkg' }}
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +30,6 @@ jobs:
             }
             console.log(variables)
             const result = await github.request(query, variables)
-            console.log(result)
             return result
 
       #- uses: actions/checkout@v3
