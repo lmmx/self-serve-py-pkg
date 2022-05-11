@@ -1,18 +1,35 @@
-name: Execute template to populate repository
+name: Send a repository dispatch event back to the originating template repo
 
 on:
-  workflow_dispatch:
+  push:
 
 permissions:
   contents: write
 
 jobs:
   setup-repo:
+    if: ${{ github.repository != 'lmmx/self-serve-py-pkg' }}
     runs-on: ubuntu-latest
     steps:
       - name: Greet
         run: |
           echo "Hello from ${{ github.repository }}"
+
+      - uses: actions/github-script@v6
+        id: fetch-repo-and-user-details
+        with:
+          script: |
+            owner = context.repo.owner
+            name = context.repo.repo
+            query = `POST /repos/${owner}/${repo}/dispatches`
+            const variables = {
+              owner: owner,
+              name: name,
+              event_type: 'trigger', # becomes `context.payload.action`
+            }
+            const result = await github.request(query, variables)
+            console.log(result)
+            return result
 
       #- uses: actions/checkout@v3
       #  with:
@@ -21,34 +38,6 @@ jobs:
 
       #- name: Install cookiecutter
       #  run: pip3 install cookiecutter
-
-      #- uses: actions/github-script@v6
-      #  id: fetch-repo-and-user-details
-      #  with:
-      #    script: |
-      #      const query = `query($owner:String!, $name:String!) {
-      #        repository(owner:$owner, name:$name) {
-      #          createdAt
-      #          name
-      #          description
-      #          owner {
-      #            login
-      #            ... on User {
-      #              name
-      #            }
-      #            ... on Organization {
-      #              name
-      #            }
-      #          }
-      #        }
-      #      }`;
-      #      const variables = {
-      #        owner: context.repo.owner,
-      #        name: context.repo.repo
-      #      }
-      #      const result = await github.graphql(query, variables)
-      #      console.log(result)
-      #      return result
 
       #- name: Rebuild contents using cookiecutter
       #  env:
