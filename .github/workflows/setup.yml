@@ -2,6 +2,7 @@ name: Execute template to populate repository
 
 on:
   repository_dispatch:
+    types: [on-demand-test]
     #inputs:
     #  owner:
     #    description: 'foo'
