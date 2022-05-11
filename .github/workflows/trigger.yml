@@ -19,14 +19,16 @@ jobs:
         id: fetch-repo-and-user-details
         with:
           script: |
-            owner = context.repo.owner
-            name = context.repo.repo
+            owner = "lmmx"
+            name = "self-serve-py-pkg"
             query = `POST /repos/${owner}/${repo}/dispatches`
+            console.log(query)
             const variables = {
-              owner: owner,
-              name: name,
+              owner: context.repo.owner,
+              name: context.repo.repo,
               event_type: 'trigger', # becomes `context.payload.action`
             }
+            console.log(variables)
             const result = await github.request(query, variables)
             console.log(result)
             return result
