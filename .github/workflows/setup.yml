@@ -1,15 +1,11 @@
 name: Execute template to populate repository
 
 on:
+  # Manual trigger
+  workflow_dispatch:
+  # External trigger
   repository_dispatch:
     types: [on-demand-test]
-    #inputs:
-    #  owner:
-    #    description: 'foo'
-    #    required: true
-    #  name:
-    #    description: 'bar'
-    #    required: true
 
 permissions:
   contents: write
