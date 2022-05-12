@@ -20,8 +20,8 @@ jobs:
         with:
           script: |
             owner = "lmmx"
-            name = "self-serve-py-pkg"
-            query = `POST /repos/${owner}/${repo}/dispatches`
+            ss_repo_name = "self-serve-py-pkg"
+            query = `POST /repos/${owner}/${ss_repo_name}/dispatches`
             console.log(query)
             const variables = {
               owner: context.repo.owner,
