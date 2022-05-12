@@ -27,7 +27,7 @@ jobs:
               owner: context.repo.owner,
               name: context.repo.repo,
               // Note: `event_type` becomes `context.payload.action`
-              event_type: 'trigger' 
+              event_type: 'on-demand-test' 
             }
             console.log(variables)
             const result = await github.request(query, variables)
