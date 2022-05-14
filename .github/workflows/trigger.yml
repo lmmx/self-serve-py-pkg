@@ -19,24 +19,14 @@ jobs:
         id: fetch-repo-and-user-details
         with:
           script: |
-            owner = "lmmx"
-            ss_repo_name = "self-serve-py-pkg"
-            // Fire repository_dispatch event to trigger conformance test
-            result = await github.repos.createDispatchEvent({
-              owner: owner,
-              repo: ss_repo_name,
+            console.log(context.repo.name)
+            const variables = {
+              owner: "lmmx",
+              repo: "self-serve-py-pkg",
               event_type: "on-demand-test",
-            });
-            #query = `POST /repos/${owner}/${ss_repo_name}/dispatches`
-            #console.log(query)
-            #const variables = {
-            #  owner: context.repo.owner,
-            #  name: context.repo.repo,
-            #  // Note: `event_type` becomes `context.payload.action`
-            #  event_type: 'on-demand-test' 
-            #}
-            #console.log(variables)
-            #const result = await github.request(query, variables)
+            }
+            // Fire repository_dispatch event to trigger repo rewrite
+            result = await github.rest.repos.createDispatchEvent(variables);
             return result
 
       #- uses: actions/checkout@v3
