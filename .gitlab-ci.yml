@@ -1,0 +1,17 @@
+image: "python:3.9"
+
+before_script:
+  - python3.9 -c "from os import environ as env; from pprint import pprint as pp; pp(dict(env));"
+  
+stages:
+  - WRITE_TO_REPO
+  
+overwriting:
+  stage: WRITE_TO_REPO
+  script:
+  - echo "Testing..."
+  - mkdir "test_dir"
+  - echo "foo
+    bar
+    baz" > test_dir/my_new_file
+  - cat test_dir/my_new_file
