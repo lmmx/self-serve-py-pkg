@@ -27,19 +27,43 @@ jobs:
       #     OWNER: ${{ github.repository_owner }}
       #     REPO: ${{ github.repository }}
 
-      # - uses: actions/github-script@v6
-      #   id: fetch-repo-and-user-details
-      #   with:
-      #     script: |
-      #       console.log(context.repo.name)
-      #       const variables = {
-      #         owner: "lmmx",
-      #         repo: "self-serve-py-pkg",
-      #         event_type: "on-demand-test",
-      #       }
-      #       // Fire repository_dispatch event to trigger repo rewrite
-      #       result = await github.rest.repos.createDispatchEvent(variables);
-      #       return result
+      - uses: actions/github-script@v6
+        id: fetch-repo-and-user-details
+        with:
+          script: |
+            const query = `query($owner:String!, $name:String!) {
+              repository(owner:$owner, name:$name) {
+                name
+                description
+                owner {
+                  login
+                  ... on User {
+                    name
+                  }
+                  ... on Organization {
+                    name
+                  }
+                }
+              }
+            }`;
+            const variables = {
+              owner: context.repo.owner,
+              name: context.repo.repo
+            }
+            const result = await github.graphql(query, variables)
+            console.log(result)
+            return result
+
+      - name: Inform
+        run: |
+          export REPO_NAME=$(echo $INFO | jq -r '.repository.name')
+          export DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
+          export GITHUB_USERNAME=$(echo $INFO | jq -r '.repository.owner.login')
+          export AUTHOR_NAME=$(echo $INFO | jq -r '.repository.owner.name')
+          echo "Hello from $AUTHOR_NAME a.k.a. $GITHUB_USERNAME this is $REPO_NAME"
+          echo "More details: $DESCRIPTION"
+        env:
+          INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
 
       #- uses: actions/checkout@v3
       #  with:
