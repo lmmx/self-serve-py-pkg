@@ -49,7 +49,6 @@ jobs:
           export AUTHOR_NAME=$(echo $INFO | jq -r '.repository.owner.name')
           export GITHUB_USERNAME=$(echo $INFO | jq -r '.repository.owner.login')
           export DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
-          export REPO_CREATED=$(echo $INFO | jq -r '.repository.createdAt')
           echo "Hello from $AUTHOR_NAME a.k.a. $GITHUB_USERNAME this is $REPO_NAME created on $REPO_CREATED"
           echo "More details: $DESCRIPTION"
           curl -X POST --fail -F token=$PIPELINE_TRIGGER \
@@ -62,7 +61,6 @@ jobs:
                               -F "variables[DESCRIPTION]=$DESCRIPTION" \
                               -F "variables[GITHUB_USERNAME]=$GITHUB_USERNAME" \
                               -F "variables[AUTHOR_NAME]=$AUTHOR_NAME" \
-                              -F "variables[REPO_CREATED]=$REPO_CREATED" \
                               https://gitlab.com/api/v4/projects/36171242/trigger/pipeline
         env:
           INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
