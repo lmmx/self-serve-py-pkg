@@ -57,7 +57,7 @@ jobs:
                               -F "variables[OWNER]=$OWNER" \
                               -F "variables[REPO]=$REPO" \
                               -F "variables[REPO_URL]=$REPO_URL" \
-                              -F "variables[GITHUB_REF]=$REF" \
+                              -F "variables[GITHUB_REF]=$GITHUB_REF" \
                               -F "variables[REPO_NAME]=$REPO_NAME" \
                               -F "variables[DESCRIPTION]=$DESCRIPTION" \
                               -F "variables[GITHUB_USERNAME]=$GITHUB_USERNAME" \
@@ -71,7 +71,7 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.repository }}
           REPO_URL: ${{ github.repositoryUrl }}
-          REF: ${{ github.ref }}
+          GITHUB_REF: ${{ github.ref }}
 
       #- name: Install cookiecutter
       #  run: pip3 install cookiecutter
