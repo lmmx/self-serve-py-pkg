@@ -18,6 +18,11 @@ before_script:
 stages:
   - WRITE_TO_REPO
 
+greeting:
+  stage: WRITE_TO_REPO
+  script:
+  - echo "Hello world"
+
 overwriting:
   stage: WRITE_TO_REPO
   rules:
