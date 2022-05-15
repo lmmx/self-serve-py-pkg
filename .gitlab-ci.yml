@@ -2,19 +2,75 @@ image: "python:3.9"
 
 before_script:
   - python3.9 -c "from os import environ as env; from pprint import pprint as pp; pp(dict(env));"
-  
+  - python3.9 -m pip install cookiecutter
+  - eval "$(ssh-agent -s)"
+    # Following: https://serverfault.com/questions/856194/securely-add-a-host-e-g-github-to-the-ssh-known-hosts-file
+  - GITHUB_FINGERPRINT=$(ssh-keyscan -t ed25519 github.com | tee github-key-temp | ssh-keygen -lf -)
+  - GITHUB_EXPECTED_FINGERPRINT="256 SHA256:SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU github.com (ED25519)"
+    # From: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
+  - if [ ! "$GITHUB_FINGERPRINT" = "$GITHUB_EXPECTED_FINGERPRINT" ]; then echo "Error - SSH fingerprint mismatch" 1>&2 && exit 25519; fi
+  - mkdir -p ~/.ssh # This shouldn't be necessary but getting an error that "file/dir. doesn't exist" on next line
+  - cat github-key-temp >> ~/.ssh/known_hosts && rm github-key-temp
+  - ssh-add <(echo "${SSH_priv_key_GitHub}" | base64 --decode)
+  - git config --global user.email "${git_email}"
+  - git config --global user.name "${full_name}"
+
 stages:
   - WRITE_TO_REPO
-  
+
 overwriting:
   stage: WRITE_TO_REPO
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
-  - echo "Testing 1 2 3..."
-  - cat $TRIGGER_PAYLOAD
-  - mkdir "test_dir"
+  - echo "Here comes the clone..."
+  - git clone git@github.com:OWNER/REPO_NAME.git
+  - cd REPO_NAME
+  # - pushd /tmp
+  # - cookiecutter gh:
+  # - ...
   - echo "foo
     bar
-    baz" > test_dir/my_new_file
-  - cat test_dir/my_new_file
+    baz" > .github/workflows/NEW_WORKFLOW_NAME.yml
+  - git add .github
+  - git commit -m "Added NEW_WORKFLOW_NAME.yml"
+  - git push origin master
+
+  # - name: Rebuild contents using cookiecutter
+  #   env:
+  #     INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
+  #   run: |
+  #     export REPO_NAME=$(echo $INFO | jq -r '.repository.name')
+  #     # Run cookiecutter
+  #     pushd /tmp
+  #     USER_NAME="$(echo $INFO | jq -r .repository.owner.login)"
+  #     # Don't put my email into a package if another user uses this template repo
+  #     if [[ $USER_NAME == "lmmx" ]]
+  #     then
+  #       EMAIL="${{ secrets.EMAIL }}"
+  #     else
+  #       EMAIL=""
+  #     fi
+  #     cookiecutter gh:lmmx/py-pkg-cc-template --no-input \
+  #       lib_name=$REPO_NAME \
+  #       description="$(echo $INFO | jq -r .repository.description)" \
+  #       github_username=$USER_NAME \
+  #       author_name="$(echo $INFO | jq -r .repository.owner.name)"
+  #       email="$EMAIL"
+  #       year="$(echo $INFO | jq -r .repository.createdAt | cut -d\- -f 1)"
+  #     popd
+  #     # Move generated content to root directory of repo
+  #     mv /tmp/$REPO_NAME/* .
+  #     # Delete the setup.yml workflow (and entire workflows dir), it has served its purpose
+  #     rm -rf .github/
+  #     # Add .github, .gitignore, .pre-commit-config.yaml, .readthedocs.yml:
+  #     mv /tmp/$REPO_NAME/.github/ .
+  #     mv /tmp/$REPO_NAME/.gitignore .
+  #     mv /tmp/$REPO_NAME/.pre-commit-config.yaml .
+  #     mv /tmp/$REPO_NAME/.readthedocs.yml .
+
+  # - name: Force push new repo contents
+  #   uses: stefanzweifel/git-auto-commit-action@v4
+  #   with:
+  #     commit_message: "Initial library structure"
+  #     push_options: --force
