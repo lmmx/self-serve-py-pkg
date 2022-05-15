@@ -44,7 +44,6 @@ jobs:
             return result
 
       - name: Inform and trigger pipeline
-        id: process-details
         run: |
           export REPO_NAME=$(echo $INFO | jq -r '.repository.name')
           export DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
@@ -57,7 +56,8 @@ jobs:
                               -F ref=$REF \
                               -F "variables[OWNER]=$OWNER" \
                               -F "variables[REPO]=$REPO" \
-                              -F "variables[GITHUB_HEAD_REF]=$HEAD_REF" \
+                              -F "variables[REPO_URL]=$REPO_URL" \
+                              -F "variables[GITHUB_REF]=$REF" \
                               -F "variables[REPO_NAME]=$REPO_NAME" \
                               -F "variables[DESCRIPTION]=$DESCRIPTION" \
                               -F "variables[GITHUB_USERNAME]=$GITHUB_USERNAME" \
@@ -65,12 +65,13 @@ jobs:
                               -F "variables[REPO_YEAR]=$REPO_YEAR" \
                               https://gitlab.com/api/v4/projects/36171242/trigger/pipeline
         env:
+          INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
           PIPELINE_TRIGGER: d089503ec29563190c426916832117
           REF: master
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.repository }}
-          HEAD_REF: ${{ github.head_ref }}
-          INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
+          REPO_URL: ${{ github.repositoryUrl }}
+          REF: ${{ github.ref }}
 
       #- name: Install cookiecutter
       #  run: pip3 install cookiecutter

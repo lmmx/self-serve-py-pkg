@@ -8,8 +8,11 @@ stages:
   
 overwriting:
   stage: WRITE_TO_REPO
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
   - echo "Testing 1 2 3..."
+  - cat $TRIGGER_PAYLOAD
   - mkdir "test_dir"
   - echo "foo
     bar
