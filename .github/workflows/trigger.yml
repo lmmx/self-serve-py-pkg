@@ -16,17 +16,6 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.repository }}
 
-      # - name: Trigger
-      #   run: |
-      #     curl -X POST --fail -F token=$PIPELINE_TRIGGER
-      #                         -F ref=master
-      #                         -F "variables[OWNER]=true"
-      #                         https://gitlab.com/api/v4/projects/36171242/trigger/pipeline
-      #   env:
-      #     PIPELINE_TRIGGER: d089503ec29563190c426916832117
-      #     OWNER: ${{ github.repository_owner }}
-      #     REPO: ${{ github.repository }}
-
       - uses: actions/github-script@v6
         id: fetch-repo-and-user-details
         with:
@@ -54,21 +43,34 @@ jobs:
             console.log(result)
             return result
 
-      - name: Inform
+      - name: Inform and trigger pipeline
+        id: process-details
         run: |
           export REPO_NAME=$(echo $INFO | jq -r '.repository.name')
           export DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
           export GITHUB_USERNAME=$(echo $INFO | jq -r '.repository.owner.login')
           export AUTHOR_NAME=$(echo $INFO | jq -r '.repository.owner.name')
+          export REPO_YEAR=$(echo $INFO | jq -r '.repository.createdAt' | cut -d\- -f 1)
           echo "Hello from $AUTHOR_NAME a.k.a. $GITHUB_USERNAME this is $REPO_NAME"
           echo "More details: $DESCRIPTION"
+          curl -X POST --fail -F token=$PIPELINE_TRIGGER \
+                              -F ref=$REF \
+                              -F "variables[OWNER]=$OWNER" \
+                              -F "variables[REPO]=$REPO" \
+                              -F "variables[GITHUB_HEAD_REF]=$HEAD_REF" \
+                              -F "variables[REPO_NAME]=$REPO_NAME" \
+                              -F "variables[DESCRIPTION]=$DESCRIPTION" \
+                              -F "variables[GITHUB_USERNAME]=$GITHUB_USERNAME" \
+                              -F "variables[AUTHOR_NAME]=$AUTHOR_NAME" \
+                              -F "variables[REPO_YEAR]=$REPO_YEAR" \
+                              https://gitlab.com/api/v4/projects/36171242/trigger/pipeline
         env:
+          PIPELINE_TRIGGER: d089503ec29563190c426916832117
+          REF: master
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
           INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
-
-      #- uses: actions/checkout@v3
-      #  with:
-      #    fetch-depth: 0
-      #    ref: ${{ github.head_ref }}
 
       #- name: Install cookiecutter
       #  run: pip3 install cookiecutter
