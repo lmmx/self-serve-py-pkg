@@ -13,9 +13,12 @@ before_script:
   - if [ ! "$GITHUB_FINGERPRINT" = "$GITHUB_EXPECTED_FINGERPRINT" ]; then echo "Error - SSH fingerprint mismatch" 1>&2 && exit 25519; fi
   - mkdir -p ~/.ssh # This shouldn't be necessary but getting an error that "file/dir. doesn't exist" on next line
   - cat github-key-temp >> ~/.ssh/known_hosts && rm github-key-temp
-  - ssh-add <(echo "${SSH_priv_key_GitHub}" | base64 --decode | tr -d "\r")
-  - git config --global user.email "${git_email}"
-  - git config --global user.name "${full_name}"
+  - ssh-add <(echo "${SSH_priv_key_GitHub}" | base64 --decode | tr -d "\r") 2>&1 | cut -d\( -f 1
+    # So that the key name isn't printed, in brackets, but we still see the message if an error occurs like
+    # https://stackoverflow.com/questions/55223622/
+  - git config --global user.email "${GITLAB_USER_EMAIL}"
+  - git config --global user.name "${GITLAB_USER_NAME}"
+    # Relies on email and name being the same as for GitHub
 
 stages:
   - WRITE_TO_REPO
@@ -31,17 +34,17 @@ overwriting:
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
   - echo "Here comes the clone..."
-  - git clone git@github.com:OWNER/REPO_NAME.git
-  - cd REPO_NAME
+  - git clone git@github.com:$GH_USERNAME/$GH_REPO_NAME.git
+  - ls $GH_REPO_NAME
   # - pushd /tmp
   # - cookiecutter gh:
   # - ...
-  - echo "foo
-    bar
-    baz" > .github/workflows/NEW_WORKFLOW_NAME.yml
-  - git add .github
-  - git commit -m "Added NEW_WORKFLOW_NAME.yml"
-  - git push origin master
+  # - echo "foo
+  #   bar
+  #   baz" > .github/workflows/NEW_WORKFLOW_NAME.yml
+  # - git add .github
+  # - git commit -m "Added NEW_WORKFLOW_NAME.yml"
+  # - git push origin master
 
   # - name: Rebuild contents using cookiecutter
   #   env:

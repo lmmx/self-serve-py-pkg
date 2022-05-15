@@ -46,34 +46,34 @@ jobs:
 
       - name: Inform and trigger pipeline
         run: |
-          export REPO_NAME=$(echo $INFO | jq -r '.repository.name')
-          export AUTHOR_NAME=$(echo $INFO | jq -r '.repository.owner.name')
-          export GITHUB_USERNAME=$(echo $INFO | jq -r '.repository.owner.login')
-          export DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
-          export REPO_CREATED=$(echo $INFO | jq -r '.repository.createdAt' | cut -d\- -f 1)
-          echo "Hello from $AUTHOR_NAME a.k.a. $GITHUB_USERNAME"
-          echo "This is $REPO_NAME created in $REPO_CREATED"
-          echo "More details: $DESCRIPTION"
+          export GH_REF=$(echo $GH_REF_HEAD | cut -d\/ -f 3) # e.g. heads/ref/master --> master
+          export GH_REPO_NAME=$(echo $INFO | jq -r '.repository.name')
+          export GH_AUTHOR_NAME=$(echo $INFO | jq -r '.repository.owner.name')
+          export GH_USERNAME=$(echo $INFO | jq -r '.repository.owner.login')
+          export GH_DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
+          export GH_YEAR_REPO_CREATED=$(echo $INFO | jq -r '.repository.createdAt' | cut -d\- -f 1)
+          echo "Hello from $GH_AUTHOR_NAME a.k.a. $GH_USERNAME"
+          echo "This is $GH_REPO_NAME created in $GH_REPO_CREATED on branch $GH_REF"
+          echo "More details: $GH_DESCRIPTION"
           curl -X POST --fail -F token=$PIPELINE_TRIGGER \
                               -F ref=$REF \
-                              -F "variables[OWNER]=$OWNER" \
-                              -F "variables[REPO]=$REPO" \
-                              -F "variables[REPO_URL]=$REPO_URL" \
-                              -F "variables[GITHUB_REF]=$GITHUB_REF" \
-                              -F "variables[REPO_NAME]=$REPO_NAME" \
-                              -F "variables[DESCRIPTION]=$DESCRIPTION" \
-                              -F "variables[REPO_CREATED]=$REPO_CREATED" \
-                              -F "variables[GITHUB_USERNAME]=$GITHUB_USERNAME" \
-                              -F "variables[AUTHOR_NAME]=$AUTHOR_NAME" \
+                              -F "variables[GH_OWNER]=$GH_OWNER" \
+                              -F "variables[GH_REPO]=$GH_REPO" \
+                              -F "variables[GH_REPO_URL]=$GH_REPO_URL" \
+                              -F "variables[GH_REF]=$GH_REF" \
+                              -F "variables[GH_REPO_NAME]=$GH_REPO_NAME" \
+                              -F "variables[GH_AUTHOR_NAME]=$GH_AUTHOR_NAME" \
+                              -F "variables[GH_USERNAME]=$GH_USERNAME" \
+                              -F "variables[GH_DESCRIPTION]=$GH_DESCRIPTION" \
+                              -F "variables[GH_YEAR_REPO_CREATED]=$GH_YEAR_REPO_CREATED" \
                               https://gitlab.com/api/v4/projects/36171242/trigger/pipeline
         env:
           INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
           PIPELINE_TRIGGER: 57426e53d0ee59b9205a62166e3d53
-          REF: master
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.repository }}
-          REPO_URL: ${{ github.repositoryUrl }}
-          GITHUB_REF: ${{ github.ref }}
+          GH_OWNER: ${{ github.repository_owner }}
+          GH_REPO: ${{ github.repository }}
+          GH_REPO_URL: ${{ github.repositoryUrl }}
+          GH_REF_HEAD: ${{ github.ref }}
 
       #- name: Install cookiecutter
       #  run: pip3 install cookiecutter
