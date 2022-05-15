@@ -21,11 +21,15 @@ stages:
 
 greeting:
   stage: WRITE_TO_REPO
+  tags:
+     - docker
   script:
   - echo "Hello world"
 
 overwriting:
   stage: WRITE_TO_REPO
+  tags:
+     - docker
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
