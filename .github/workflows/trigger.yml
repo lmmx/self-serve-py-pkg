@@ -53,7 +53,7 @@ jobs:
           export GH_DESCRIPTION=$(echo $INFO | jq -r '.repository.description')
           export GH_YEAR_REPO_CREATED=$(echo $INFO | jq -r '.repository.createdAt' | cut -d\- -f 1)
           echo "Hello from $GH_AUTHOR_NAME a.k.a. $GH_USERNAME"
-          echo "This is $GH_REPO_NAME created in $GH_REPO_CREATED on branch $GH_REF"
+          echo "This is $GH_REPO_NAME created in $GH_YEAR_REPO_CREATED on branch $GH_REF"
           echo "More details: $GH_DESCRIPTION"
           curl -X POST --fail -F token=$PIPELINE_TRIGGER \
                               -F ref=$GH_REF \
