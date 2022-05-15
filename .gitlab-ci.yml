@@ -47,10 +47,10 @@ overwriting:
 
       # Move out of repo
     - pushd /tmp
-    - cookiecutter gh:lmmx/py-pkg-cc-template --no-input \
-        lib_name="$GH_REPO_NAME" \
-        description="$GH_DESCRIPTION" \
-        github_username="$GH_USERNAME" \
+    - cookiecutter gh:lmmx/py-pkg-cc-template --no-input 
+        lib_name="$GH_REPO_NAME" 
+        description="$GH_DESCRIPTION" 
+        github_username="$GH_USERNAME" 
         author_name="$GH_AUTHOR_NAME"
         email="$GITLAB_USER_EMAIL"
         year="$GH_YEAR_REPO_CREATED"
