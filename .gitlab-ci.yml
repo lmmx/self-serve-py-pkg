@@ -23,7 +23,7 @@ stages:
 greeting:
   stage: WRITE_TO_REPO
   script:
-  - echo "Check this out..." # Do not delete this job, needed to run initial pipeline
+  - echo "Check this out ..." # Do not delete this job, needed to run initial pipeline
 
 overwriting:
   stage: WRITE_TO_REPO
