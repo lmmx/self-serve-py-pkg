@@ -6,7 +6,7 @@ before_script:
   - eval "$(ssh-agent -s)"
     # Following: https://serverfault.com/questions/856194/securely-add-a-host-e-g-github-to-the-ssh-known-hosts-file
   - GITHUB_FINGERPRINT=$(ssh-keyscan -t ed25519 github.com | tee github-key-temp | ssh-keygen -lf -)
-  - GITHUB_EXPECTED_FINGERPRINT="256 SHA256:SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU github.com (ED25519)"
+  - GITHUB_EXPECTED_FINGERPRINT="256 SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU github.com (ED25519)"
     # From: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
   - if [ ! "$GITHUB_FINGERPRINT" = "$GITHUB_EXPECTED_FINGERPRINT" ]; then echo "Error - SSH fingerprint mismatch" 1>&2 && exit 25519; fi
   - mkdir -p ~/.ssh # This shouldn't be necessary but getting an error that "file/dir. doesn't exist" on next line
