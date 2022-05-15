@@ -1,4 +1,5 @@
 default:
+  tags: [docker] # Runners will pick the job up faster (not leave it pending)
   image: "python:3.9"
 
 before_script:
@@ -12,7 +13,7 @@ before_script:
   - if [ ! "$GITHUB_FINGERPRINT" = "$GITHUB_EXPECTED_FINGERPRINT" ]; then echo "Error - SSH fingerprint mismatch" 1>&2 && exit 25519; fi
   - mkdir -p ~/.ssh # This shouldn't be necessary but getting an error that "file/dir. doesn't exist" on next line
   - cat github-key-temp >> ~/.ssh/known_hosts && rm github-key-temp
-  - ssh-add <(echo "${SSH_priv_key_GitHub}" | base64 --decode)
+  - ssh-add <(echo "${SSH_priv_key_GitHub}" | tr -d "\r" | base64 --decode)
   - git config --global user.email "${git_email}"
   - git config --global user.name "${full_name}"
 
@@ -21,15 +22,11 @@ stages:
 
 greeting:
   stage: WRITE_TO_REPO
-  tags:
-     - docker
   script:
-  - echo "Hello world"
+  - echo "Hello world" # Do not delete this job, needed to run initial pipeline
 
 overwriting:
   stage: WRITE_TO_REPO
-  tags:
-     - docker
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
