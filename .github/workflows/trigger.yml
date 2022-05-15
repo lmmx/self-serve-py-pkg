@@ -46,7 +46,7 @@ jobs:
 
       - name: Inform and trigger pipeline
         run: |
-          export GH_REF=$(echo $GH_REF_HEAD | cut -d\/ -f 3) # e.g. heads/ref/master --> master
+          export GH_REF=$(echo $GH_REF_HEAD | cut -d\/ -f 3) # e.g. refs/heads/master --> master
           export GH_REPO_NAME=$(echo $INFO | jq -r '.repository.name')
           export GH_AUTHOR_NAME=$(echo $INFO | jq -r '.repository.owner.name')
           export GH_USERNAME=$(echo $INFO | jq -r '.repository.owner.login')
@@ -56,7 +56,7 @@ jobs:
           echo "This is $GH_REPO_NAME created in $GH_REPO_CREATED on branch $GH_REF"
           echo "More details: $GH_DESCRIPTION"
           curl -X POST --fail -F token=$PIPELINE_TRIGGER \
-                              -F ref=$REF \
+                              -F ref=$GH_REF \
                               -F "variables[GH_OWNER]=$GH_OWNER" \
                               -F "variables[GH_REPO]=$GH_REPO" \
                               -F "variables[GH_REPO_URL]=$GH_REPO_URL" \
@@ -66,10 +66,11 @@ jobs:
                               -F "variables[GH_USERNAME]=$GH_USERNAME" \
                               -F "variables[GH_DESCRIPTION]=$GH_DESCRIPTION" \
                               -F "variables[GH_YEAR_REPO_CREATED]=$GH_YEAR_REPO_CREATED" \
-                              https://gitlab.com/api/v4/projects/36171242/trigger/pipeline
+                              https://gitlab.com/api/v4/projects/$PROJECT_ID/trigger/pipeline
         env:
           INFO: ${{ steps.fetch-repo-and-user-details.outputs.result }}
-          PIPELINE_TRIGGER: 57426e53d0ee59b9205a62166e3d53
+          PIPELINE_TRIGGER: c608274746d1da1521ace78909c6e6
+          PROJECT_ID: 36180497
           GH_OWNER: ${{ github.repository_owner }}
           GH_REPO: ${{ github.repository }}
           GH_REPO_URL: ${{ github.repositoryUrl }}
