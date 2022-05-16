@@ -19,6 +19,7 @@ overwriting:
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
     - python3.9 -c "assert '$GH_REPO_NAME' != '', 'Stopping early because env. var. \$GH_REPO_NAME is empty'"
+    - python3.9 -c "assert '$GH_USERNAME' == 'lmmx', 'Stopping early because env. var. \$GH_USERNAME is not lmmx'"
       # Basic input validation
 
     - python3.9 -c "from os import environ as env; from pprint import pprint as pp; pp(dict(env));"
@@ -77,6 +78,5 @@ overwriting:
                  -m "CI job started at $CI_JOB_STARTED_AT"
     - git show-ref
       # git refs in the final working directory (the git repo of the new package, via the template-generated repo)
-    - python3.9 -c "raise ValueError('Halt early')"
     - git push origin $GH_REF
       # The repo will now contain only what was generated from the cookiecutter template
