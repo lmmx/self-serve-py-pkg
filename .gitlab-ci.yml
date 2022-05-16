@@ -62,10 +62,10 @@ overwriting:
     - popd
       # Move back to repo
 
-    - mv $GH_REPO_NAME/.git /tmp/$REPO_NAME/$REPO_NAME/
+    - mv $GH_REPO_NAME/.git /tmp/$GH_REPO_NAME/
       # Move git subdirectory of template-generated repo into the generated package (so it becomes the new repo)
 
-    - cd /tmp/$REPO_NAME/$REPO_NAME/
+    - cd /tmp/$GH_REPO_NAME/
     - ls -a
     # - git remote set-url origin $GIT_REPO_SSH_URL
       # The pipeline is a git repo (for the commit that was last pushed),
