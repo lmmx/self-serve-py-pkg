@@ -66,6 +66,7 @@ overwriting:
       # Move git subdirectory of template-generated repo into the generated package (so it becomes the new repo)
 
     - cd /tmp/$REPO_NAME/
+    - ls -a
     # - git remote set-url origin $GIT_REPO_SSH_URL
       # The pipeline is a git repo (for the commit that was last pushed),
       # so the clone is a submodule and therefore needs to have a remote added to be able to push
