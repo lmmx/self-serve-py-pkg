@@ -38,6 +38,8 @@ overwriting:
       # So that the key name isn't printed, in brackets, but we still see the message if an error occurs like
       # https://stackoverflow.com/questions/55223622/
 
+    - find / -iname ".git" 2> /dev/null
+      # Just find and delete other git repos?
     - git show-ref
       # Debugging when getting "error: src refspec master does not match any"
       
