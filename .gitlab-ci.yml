@@ -45,10 +45,14 @@ overwriting:
     - git config --global user.name "${GITLAB_USER_NAME}"
       # Relies on email and name being the same as for GitHub
       
-    - git clone -b $GH_REF --depth 1 git@github.com:$GH_USERNAME/$GH_REPO_NAME.git
+    - GIT_REPO_SSH_URL="git@github.com:$GH_USERNAME/$GH_REPO_NAME.git"
+    - git clone -b $GH_REF --depth 1 $GIT_REPO_SSH_URL
       # https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
       # --depth flag implies --single-branch (https://git-scm.com/docs/git-clone)
-    - ls $GH_REPO_NAME
+    - git remote add origin $GIT_REPO_SSH_URL
+      # The pipeline is a git repo (for the commit that was last pushed),
+      # so the clone is a submodule and therefore needs to have a remote added to be able to push
+      # https://stackoverflow.com/questions/8372625/git-how-to-push-submodule-to-a-remote-repository
 
       # Move out of repo
     - pushd /tmp
