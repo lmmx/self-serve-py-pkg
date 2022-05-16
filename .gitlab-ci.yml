@@ -18,11 +18,13 @@ overwriting:
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
+    #- python3.9 -c "from os import environ as env; from pprint import pprint as pp; pp(dict(env));"
+    # Uncomment to debug
+
     - python3.9 -c "assert '$GH_REPO_NAME' != '', 'Stopping early because env. var. \$GH_REPO_NAME is empty'"
     - python3.9 -c "assert '$GH_USERNAME' == 'lmmx', 'Stopping early because env. var. \$GH_USERNAME is not lmmx'"
       # Basic input validation
 
-    - python3.9 -c "from os import environ as env; from pprint import pprint as pp; pp(dict(env));"
     - python3.9 -m pip install cookiecutter
 
     - eval "$(ssh-agent -s)"
